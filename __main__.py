@@ -19,7 +19,7 @@ except ImportError:
 try:
     from PIL import Image, ImageDraw
 except ImportError:
-    # install scipy
+    # install Pillow
     try:
         os.system("python -m pip install Pillow")
         from PIL import Image, ImageDraw
@@ -37,6 +37,11 @@ INNER_CIRCLE_RATIO = 58/210
 MM_TO_INCH = 1 / 25.4
 
 def a4_size(dpi=150):
+    """
+    Calculate the width and height of an A4 page in pixels based on the given dpi.
+    :param dpi:
+    :return: width, height
+    """
     width = int(8.27 * dpi)
     height = int(11.69 * dpi)
     return width, height
