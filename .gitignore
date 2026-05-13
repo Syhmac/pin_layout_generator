@@ -1,1 +1,7 @@
 .idea
+config.jsons
+test_unit.py
+logs/*
+config.json
+pin.png
+pins.jpg

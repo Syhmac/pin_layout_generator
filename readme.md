@@ -3,6 +3,11 @@ This project creates a print-ready image containing a circular pins layout.
 
 ## Requirements
 - Python 3.9 or higher
+- Following Python libraries: (should install automatically when you run the script, but there is a chance that they won't)
+    - Pillow
+    - Numpy
+    - Rich
+    - Syhmac's Simple Logger (bundled)
 
 ## Features
 - Automatically installs python dependencies.
@@ -10,30 +15,115 @@ This project creates a print-ready image containing a circular pins layout.
 - Creates a print-ready A4 sized image.
 - Verifies that the image exists before processing.
 - Allows the user to input custom DPI and pin sizes.
-
+- Configurable via `config.json` file.
+- Easy to use command-line interface.
 
 ## Usage
-1. Clone the repository or download the `__main__.py` file.
-2. Run the script using Python.
-3. Follow the prompts to input the desired DPI and pin size.
-4. Follow further prompts to load the images. If you want to create multiple pins of the same image, you can break the 
-loop by leaving an empty entry. Last image will be used for the remaining pins.
-5. Script will generate a `pins.jpg` file and exit.
+1. Clone the repository or download the entire project.
+2. Copy `config.default` to `config.json` and adjust the default values if needed. You can skip this step if you want to use the default values.
+Script will create a `config.json` file if it doesn't exist, but it will not overwrite an existing one.
+3. Run the script from command prompt using `python __main__.py` command.
+4. Follow the prompts to input the desired DPI and pin size.
+5. You will see a table with image ID, path and color. Choose the ID of the image you want to set for each pin. Once you set one of them
+you can then choose different ID and input the ID of the pin that's already set to copy its properties. If you leave any
+entry empty, the script will attempt to fill it, but the entry of ID 0 MUST be set.
+6. Script will generate a `pins.jpg` file and exit.
+
+If you encounter any issues, please check the troubleshooting section below or open an issue on GitHub.
 
 ### Example:
 ```
-python __main__.py
+python .\__main__.py
+Enter the target dpi. Leave blank to use the value from config.json
 
-Enter the target dpi (150 by default): 
-Enter the pin outer diameter as number (70 [mm] by default): 
-Enter the pin inner diameter as number (58 [mm] by default): 
+Enter the pin outer diameter in millimeters. Leave blank to use the value from config.json
+
+Enter the pin inner diameter in millimeters. Leave blank to use the value from config.json
+
 Page size: 1240x1753 pixels
 Pin outer diameter: 413 pixels
 Pin inner diameter: 342 pixels
 Number of pins that can fit on the page: 12
-Enter the path for image 1 (or press Enter to finish): 1.jpg
-Enter the path for image 2 (or press Enter to finish): 
+You will be prompted to enter the path for images. If you leave any image set to None it will be filled with the details of the nearest previous image
+WARNING: IMAGE OF ID 0 NEEDS TO BE SET. YOU CAN'T LEAVE IT EMPTY!!!
+                       Images
+┏━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ ID ┃ Image Path ┃ Border Color ┃ Background Color ┃
+┡━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ 0  │ None       │ None         │ None             │
+│ 1  │ None       │ None         │ None             │
+│ 2  │ None       │ None         │ None             │
+│ 3  │ None       │ None         │ None             │
+│ 4  │ None       │ None         │ None             │
+│ 5  │ None       │ None         │ None             │
+│ 6  │ None       │ None         │ None             │
+│ 7  │ None       │ None         │ None             │
+│ 8  │ None       │ None         │ None             │
+│ 9  │ None       │ None         │ None             │
+│ 10 │ None       │ None         │ None             │
+│ 11 │ None       │ None         │ None             │
+└────┴────────────┴──────────────┴──────────────────┘
+Enter the ID of the image you want to set (or press Enter to finish):
+0
+Enter the path for image 0 or
+Input the ID of already set image to copy its properties:
+        pin.png
+Enter the border color for image 0 (in hex format, e.g. #ff0000):
+        #7B1FA2
+Enter the background color for image 0 (in hex format, e.g. #ff0000):
+        #BA68C8
+                       Images
+┏━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ ID ┃ Image Path ┃ Border Color ┃ Background Color ┃
+┡━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ 0  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 1  │ None       │ None         │ None             │
+│ 2  │ None       │ None         │ None             │
+│ 3  │ None       │ None         │ None             │
+│ 4  │ None       │ None         │ None             │
+│ 5  │ None       │ None         │ None             │
+│ 6  │ None       │ None         │ None             │
+│ 7  │ None       │ None         │ None             │
+│ 8  │ None       │ None         │ None             │
+│ 9  │ None       │ None         │ None             │
+│ 10 │ None       │ None         │ None             │
+│ 11 │ None       │ None         │ None             │
+└────┴────────────┴──────────────┴──────────────────┘
+Enter the ID of the image you want to set (or press Enter to finish):
+
+Some images were not set and has been filled automatically. Here's the final table
+                       Images
+┏━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ ID ┃ Image Path ┃ Border Color ┃ Background Color ┃
+┡━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ 0  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 1  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 2  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 3  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 4  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 5  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 6  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 7  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 8  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 9  │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 10 │ pin.png    │ #7B1FA2      │ #BA68C8          │
+│ 11 │ pin.png    │ #7B1FA2      │ #BA68C8          │
+└────┴────────────┴──────────────┴──────────────────┘
 ```
 
 This will result in:
 ![Example Output](examples/pins.jpg)
+
+## Troubleshooting
+1. First thing you should try when something goes wrong is to check the log file that is generated in the `/logs` directory.
+You will find information about the error - if it was expected. If program crashes without handling it properly, please
+open an issue on GitHub, attach the log file and provide as much information as possible about the error and your system configuration.
+
+2. Other thing you might want to try is deleting the `config.json` file and running the script again. This will create a new `config.json` file with default values.
+If the error was caused by incorrect values in the `config.json` file, this should fix it.
+
+3. Make sure that you're running the script from a command prompt. From what was reported to me it doesn't read the path
+correctly when running it by double-clicking the `__main__.py` file.
+
+4. If nothing works, please open an issue on GitHub, attach the log file and provide as much information as possible about the error and your system configuration.
+I'll try to do my best to recreate the issue on my side and fix it.

@@ -1,0 +1,8 @@
+{
+    "ask_for_colors": true,
+    "default_background_color": "#ffffff",
+    "default_border_color": "#000000",
+    "pin_inner_diameter": 58,
+    "pin_outer_diameter": 70,
+    "target_dpi": 150
+}
