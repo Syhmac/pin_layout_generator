@@ -130,7 +130,7 @@ This will result in:
 
 ## Printing
 File `pins.jpg` is generated in A4 size with 300 DPI by default, which should be print-ready for most printers. However,
-I advise to print the file using proper image viewing app, like `XnView` choosing the "Single - DPI" option int eh print layout settings.
+I advise to print the file using proper image viewing app, like `XnView` choosing the "Single - DPI" option in the print layout settings.
 This will ensure that you won't get any additional margins added by the printer. Under no circumstances you should use
 the default Windows printing options, because it will add margins and scale the image, which will result in incorrect pin layout.
 
