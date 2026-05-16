@@ -17,23 +17,37 @@ This project creates a print-ready image containing a circular pins layout.
 - Allows the user to input custom DPI and pin sizes.
 - Configurable via `config.json` file.
 - Easy to use command-line interface.
+- Two types of layout: grid and honeycomb.
+  - Grid layout aligns pins in straight rows and columns, which doesn't lose any pins on the rows dividable by 2, but might leave no margins on the sides of the page, which may cause issues when printing.
+  - Honeycomb is the default layout. It may allow you to fit an additional column of pins over the grid method and will leave bigger margins on the sides of the page, which may be better for printing.
 
-## Usage
+
+## Installation
 1. Clone the repository or download the entire project.
 2. Copy `config.default` to `config.json` and adjust the default values if needed. You can skip this step if you want to use the default values.
 Script will create a `config.json` file if it doesn't exist, but it will not overwrite an existing one.
-3. Run the script from command prompt using `python __main__.py` command.
-4. Follow the prompts to input the desired DPI and pin size.
-5. You will see a table with image ID, path and color. Choose the ID of the image you want to set for each pin. Once you set one of them
+
+## Updating
+1. Pull the latest changes from the repository or download the latest version of the project.
+2. If there are any changes to the `config.default` file, you need to copy those to your `config.json` file.
+Alternatively you can delete your `config.json` file and run the script again, which will create a new `config.json`
+file with default values. However, this will also reset any custom values you had in your `config.json` file,
+so make sure to back it up before deleting it.
+
+## Usage
+1. Run the script from command prompt using `python __main__.py` command.
+2. Follow the prompts to input the desired DPI, layout and pin size.
+3. You will see a table with image ID, path and color. Choose the ID of the image you want to set for each pin. Once you set one of them
 you can then choose different ID and input the ID of the pin that's already set to copy its properties. If you leave any
 entry empty, the script will attempt to fill it, but the entry of ID 0 MUST be set.
-6. Script will generate a `pins.jpg` file and exit.
+4. Script will generate a `pins.jpg` file and exit.
 
 If you encounter any issues, please check the troubleshooting section below or open an issue on GitHub.
 
 ### Example:
+The runtime interaction with the script may differ because I'm not updating it every time I make a change, but it should be similar to this:
 ```
-python .\__main__.py
+python __main__.py
 Enter the target dpi. Leave blank to use the value from config.json
 
 Enter the pin outer diameter in millimeters. Leave blank to use the value from config.json
@@ -113,6 +127,12 @@ Some images were not set and has been filled automatically. Here's the final tab
 
 This will result in:
 ![Example Output](examples/pins.jpg)
+
+## Printing
+File `pins.jpg` is generated in A4 size with 300 DPI by default, which should be print-ready for most printers. However,
+I advise to print the file using proper image viewing app, like `XnView` choosing the "Single - DPI" option int eh print layout settings.
+This will ensure that you won't get any additional margins added by the printer. Under no circumstances you should use
+the default Windows printing options, because it will add margins and scale the image, which will result in incorrect pin layout.
 
 ## Troubleshooting
 1. First thing you should try when something goes wrong is to check the log file that is generated in the `/logs` directory.

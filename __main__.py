@@ -4,6 +4,7 @@ import math as m
 from config import CONFIG
 from simple_logger import LOG
 from images import IMAGES
+from layout import LAYOUT_GENERATOR, LayoutType
 
 log = LOG(level=0)
 
@@ -57,8 +58,6 @@ try:
 except Exception as e:
     log.warn(f"An error occurred while initializing the console: {e}")
     console = Console(color_system="auto") # Sets color mode to auto if command prompt doesn't support truecolor
-
-from rich.table import Table
 
 log.debug("All imports successful")
 
@@ -126,6 +125,24 @@ def make_circular(img: Image.Image) -> Image.Image:
 
 if __name__ == "__main__":
     config = CONFIG(log)
+    # Get target layout
+    console.print("[#ffffff]Enter the target layout.[/#ffffff] [#aaaaaa]Leave blank to use the value from config.json[/#aaaaaa]")
+    console.print("[#53dade]1[/#53dade][#ffffff]. Grid[/#ffffff]")
+    console.print("[#53dade]2[/#53dade][#ffffff]. Honeycomb[/#ffffff]")
+    layout = input("\t")
+    if layout == "":
+        layout = config.get_layout_type()
+    else:
+        try:
+            layout = int(layout)
+            if layout < 1 or layout > 2:
+                raise ValueError
+        except ValueError:
+            console.print("[bold #ff0000]Invalid input. Please enter a number from range 1-2.[/bold #ff0000]")
+            input("Press Enter to exit...")
+            log.save()
+            exit(1)
+
     # Get target dpi
     console.print("[#ffffff]Enter the target dpi.[/#ffffff] [#aaaaaa]Leave blank to use the value from config.json[/#aaaaaa]")
     target_dpi = input("\t")
@@ -139,13 +156,6 @@ if __name__ == "__main__":
             input("Press Enter to exit...")
             log.save()
             exit(1)
-
-    # Create blank image
-    log.debug("Creating blank image")
-    width, height = a4_size(target_dpi)
-    bg = np.ones((height, width, 3), dtype=np.uint8) * 255
-    im = Image.fromarray(bg)
-    draw = ImageDraw.Draw(im)
 
     # Get pin outer diameter
     console.print("[#ffffff]Enter the pin outer diameter in millimeters. [/#ffffff][#aaaaaa]Leave blank to use the value from config.json[/#aaaaaa]")
@@ -161,8 +171,6 @@ if __name__ == "__main__":
             log.save()
             exit(1)
 
-    pin_outer_px = int(pin_outer_diameter * MM_TO_INCH * target_dpi)
-
     # Get pin inner diameter
     console.print("[#ffffff]Enter the pin inner diameter in millimeters. [/#ffffff][#aaaaaa]Leave blank to use the value from config.json[/#aaaaaa]")
     pin_inner_diameter = input("\t")
@@ -176,14 +184,13 @@ if __name__ == "__main__":
             input("Press Enter to continue...")
             exit(1)
 
-    pin_inner_px = int(pin_inner_diameter * MM_TO_INCH * target_dpi)
-
     log.debug("File properties calculated.")
 
-    console.print(f"[#ffffff]Page size: [/#ffffff][#4FC3F7]{width}x{height} pixels[/#4FC3F7]")
-    console.print(f"[#ffffff]Pin outer diameter: [/#ffffff][#4FC3F7]{pin_outer_px} pixels[/#4FC3F7]")
-    console.print(f"[#ffffff]Pin inner diameter: [/#ffffff][#4FC3F7]{pin_inner_px} pixels[/#4FC3F7]")
-    im_count_max = count_pins(width, height, pin_outer_px)
+    generator = LAYOUT_GENERATOR(pin_outer_diameter, pin_inner_diameter, target_dpi, LayoutType(layout), log)
+
+    w, h = generator.a4_size()
+    console.print(f"[#ffffff]Page size: [/#ffffff][#4FC3F7]{w}x{h} pixels[/#4FC3F7]")
+    im_count_max = generator.count_max_pins()[2]
     console.print(f"[#ffffff]Number of pins that can fit on the page: [/#ffffff][#4FB053]{im_count_max}[/#4FB053]")
 
     # Get images
@@ -211,33 +218,5 @@ if __name__ == "__main__":
 
     images, colors, bg_colors = img.get_table()
 
-    log.info("Creating the file")
-    pins_height = get_pins_height(height, pin_outer_px)
-    height_offset = (height - pins_height) // 2
-
-    curr_img_index = 0
-    for y in range(0, height - pin_outer_px, pin_outer_px):
-        for x in range(0, width - pin_outer_px, pin_outer_px):
-            # Set up image
-            inner_img_original = Image.open(images[curr_img_index]).convert("RGBA")
-            border_color = colors[curr_img_index]
-            background_color = bg_colors[curr_img_index]
-            curr_img_index += 1
-            inner_img_original = make_circular(inner_img_original)
-            inner_img = inner_img_original.resize((pin_inner_px, pin_inner_px), Image.Resampling.LANCZOS)
-            # Draw background and outline
-            try:
-                draw.ellipse((x, y + height_offset, x + pin_outer_px, y + pin_outer_px + height_offset), fill=background_color)
-                draw.ellipse((x, y + height_offset, x + pin_outer_px, y + pin_outer_px + height_offset), outline=border_color, width=2)
-            except Exception as e:
-                log.error(f"An error occurred while drawing border or background for image {curr_img_index}: {e}\nSkipping.")
-            # Paste image
-            inner_x = x + (pin_outer_px - pin_inner_px) // 2
-            inner_y = y + (pin_outer_px - pin_inner_px) // 2 + height_offset
-            im.paste(inner_img, (inner_x, inner_y), inner_img)
-
-    log.info("Finished successfully")
-    # Save image
-    im.save("pins.jpg")
+    generator.draw(images, colors, bg_colors)
     log.save()
-

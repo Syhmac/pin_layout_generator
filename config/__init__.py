@@ -10,9 +10,10 @@ class CONFIG:
         "ask_for_colors": True, # Should the app ask user for border colors, or use default for every one
         "default_border_color": "#000000", # Default border color
         "default_background_color": "#ffffff", # Default color between border and image
-        "target_dpi": 150,
+        "target_dpi": 300,
         "pin_outer_diameter": 70,
         "pin_inner_diameter": 58,
+        "layout_type": 2,
     }
     log = None
 
@@ -31,11 +32,13 @@ class CONFIG:
             self.config["default_border_color"] = config_file["default_border_color"]
             self.config["default_background_color"] = config_file["default_background_color"]
             self.config["target_dpi"] = config_file["target_dpi"]
+            self.config["layout_type"] = config_file["layout_type"]
         except FileNotFoundError:
             self.config["ask_for_colors"] = True
             self.config["default_border_color"] = "#000000"
             self.config["default_background_color"] = "#ffffff"
-            self.config["target_dpi"] = 150
+            self.config["target_dpi"] = 300
+            self.config["layout_type"] = 2
             self.__save()
 
     def __save(self) -> None:
@@ -71,7 +74,7 @@ class CONFIG:
             return int(self.config["target_dpi"])
         except Exception as e:
             self.log.error(f"Error while getting target_dpi: {e}\n\tDefaulting to 150.")
-            return 150
+            return 300
 
     def get_pin_outer_diameter(self) -> int:
         try:
@@ -86,6 +89,13 @@ class CONFIG:
         except Exception as e:
             self.log.error(f"Error while getting pin_inner_diameter: {e}\n\tDefaulting to 58.")
             return 58
+
+    def get_layout_type(self) -> int:
+        try:
+            return int(self.config["layout_type"])
+        except Exception as e:
+            self.log.error(f"Error while getting layout_type: {e}\n\tDefaulting to 2.")
+            return 2
 
     # Setters
     def set_ask_for_colors(self, value: bool) -> None:
